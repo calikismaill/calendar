@@ -2,72 +2,95 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <title>Vardiya Takvimi</title>
+  <title>Takvim Uygulaması</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 
   <style>
-    /* VERSİYON 3 - ULTRA KOMPAKT & RESPONSIVE
-       Tek sayfaya sığacak şekilde optimize edildi, tüm boşluklar minimize edildi.
-    */
+    /* GENEL KİLİTLER & ORTAK TEMEL STİL */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
       -webkit-touch-callout: none;
       -webkit-user-select: none;
-      -khtml-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
       user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     html, body {
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-      -webkit-font-smoothing: antialiased;
       height: 100%;
       overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      touch-action: manipulation;
+      background: #0a0a0a;
     }
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      background: #0a0a0a;
       color: #f5f5f5;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 8px;
+    }
+
+    /* SAYFALAR */
+    .page {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      overflow: hidden;
+    }
+    .page.active {
+      display: block;
     }
 
     .container {
       width: 100%;
-      max-width: 420px;
+      max-width: 480px;
       height: 100%;
       max-height: 100vh;
+      margin: 0 auto;
       display: flex;
       flex-direction: column;
       overflow-y: auto;
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
+      padding: 8px;
     }
 
-    /* Başlık - Ultra kompakt */
     .header {
       text-align: center;
-      margin-bottom: 8px;
       flex-shrink: 0;
     }
 
     h1 {
-      font-size: 1.3rem;
+      font-size: 1.5rem;
       font-weight: 800;
       color: #fff;
-      margin-bottom: 2px;
       letter-spacing: -0.02em;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
+      cursor: pointer; /* gizli buton */
+    }
+
+    .hidden-link {
+      cursor: pointer;
+    }
+
+    /* ---------------- VARDİYA TAKVİMİ (SAYFA 1) ---------------- */
+
+    #page1 .container {
+      padding-top: 8px;
+      padding-bottom: 8px;
+    }
+
+    #page1 .header {
+      margin-bottom: 8px;
+    }
+
+    #page1 h1 {
+      font-size: 1.3rem;
     }
 
     .calendar-icon {
@@ -84,23 +107,22 @@
       line-height: 1.3;
     }
 
-    /* Ayarlar Bölümü - Ultra kompakt grid */
-    .controls {
+    .vt-controls {
       display: grid;
       grid-template-columns: 2fr 3fr;
       gap: 6px;
-      margin-bottom: 8px;
+      margin: 8px 0;
       flex-shrink: 0;
     }
 
-    .control-group {
+    .vt-control-group {
       background: #1a1a1a;
       border-radius: 10px;
       padding: 8px;
       border: 1.5px solid #2a2a2a;
     }
 
-    .control-label {
+    .vt-control-label {
       font-size: 0.65rem;
       font-weight: 700;
       color: #666;
@@ -122,7 +144,7 @@
       gap: 4px;
     }
 
-    .config-btn {
+    .vt-config-btn {
       padding: 8px 4px;
       border-radius: 7px;
       border: 1.5px solid #333;
@@ -135,17 +157,16 @@
       text-align: center;
     }
 
-    .config-btn:active {
+    .vt-config-btn:active {
       transform: scale(0.97);
     }
 
-    .config-btn.active {
+    .vt-config-btn.active {
       background: #1043b2;
       border-color: #1043b2;
       color: #fff;
     }
 
-    /* Takvim Başlık ve İstatistik - Tek satırda */
     .calendar-info {
       display: flex;
       align-items: center;
@@ -154,7 +175,6 @@
       flex-shrink: 0;
     }
 
-    /* Ay başlığı */
     .month-title-btn {
       flex: 1;
       display: flex;
@@ -172,7 +192,7 @@
       transition: all 0.15s;
       letter-spacing: -0.01em;
     }
-    
+
     .month-title-btn:active {
       background: #252525;
     }
@@ -185,7 +205,6 @@
       fill: none;
     }
 
-    /* İstatistik kutuları - Küçültülmüş */
     .stats-compact {
       display: flex;
       gap: 4px;
@@ -221,13 +240,12 @@
       letter-spacing: 0.03em;
     }
 
-    /* Navigasyon düğmeleri */
-    .nav-group {
+    .vt-nav-group {
       display: flex;
       gap: 4px;
     }
 
-    .nav-btn {
+    .vt-nav-btn {
       width: 38px;
       height: 38px;
       border-radius: 8px;
@@ -240,7 +258,7 @@
       justify-content: center;
     }
 
-    .nav-btn:active {
+    .vt-nav-btn:active {
       transform: scale(0.95);
       background: #252525;
     }
@@ -258,7 +276,6 @@
       stroke-width: 2.5;
     }
 
-    /* Gösterge - Ultra kompakt */
     .legend {
       display: flex;
       gap: 12px;
@@ -282,11 +299,10 @@
       border-radius: 50%;
     }
 
-    .dot-work { background: #9f0e0e; } 
+    .dot-work { background: #9f0e0e; }
     .dot-off { background: #1b9e4b; }
     .dot-today { background: #f5f5f5; }
 
-    /* Takvim - Ultra kompakt */
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -362,7 +378,6 @@
       background: transparent;
     }
 
-    /* Modal - Aynı stiller */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -480,163 +495,558 @@
       color: #fff;
     }
 
-    /* Responsive - Bilgisayar için */
     @media (min-width: 768px) {
-      body {
-        padding: 20px;
-      }
-
-      .container {
+      #page1 .container {
         max-width: 480px;
         max-height: 95vh;
+        padding-top: 20px;
       }
-
-      h1 {
+      #page1 h1 {
         font-size: 1.5rem;
       }
-
       .description {
         font-size: 0.85rem;
       }
-
-      .controls {
-        gap: 8px;
-        margin-bottom: 10px;
-      }
-
-      .control-group {
+      .vt-control-group {
         padding: 10px;
       }
-
-      .config-btn {
+      .vt-config-btn {
         padding: 10px 6px;
         font-size: 0.85rem;
       }
-
       .calendar-grid {
         padding: 10px;
         gap: 4px;
       }
-
       .day-cell {
         font-size: 0.85rem;
         border-radius: 7px;
       }
-
       .weekday {
         font-size: 0.65rem;
         padding: 4px 0 7px 0;
       }
     }
-  </style>
 
+    /* ---------------- DİJİTAL TAKVİM (SAYFA 2) ---------------- */
+
+    #page2 .container {
+      padding: 10px;
+    }
+
+    #page2 .header {
+      padding: 14px 10px 6px 10px;
+    }
+
+    #page2 h1 {
+      font-size: 1.5rem;
+    }
+
+    #page2 .icon {
+      width: 32px;
+      height: 32px;
+      stroke: #fff;
+      stroke-width: 2.4;
+      fill: none;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      background: #151515;
+      border-radius: 40px;
+      padding: 4px;
+      margin: 0 auto;
+      border: 1px solid #333;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .tab {
+      border: none;
+      padding: 6px 18px;
+      font-size: .85rem;
+      font-weight: 700;
+      border-radius: 30px;
+      background: transparent;
+      color: #aaa;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: #105fce;
+      color: #fff;
+    }
+
+    .nav-bar {
+      margin-top: 8px;
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .dc-nav-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: #171717;
+      border: 1px solid #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.12s;
+    }
+
+    .dc-nav-btn:active {
+      transform: scale(0.9);
+      opacity: .7;
+    }
+
+    .dc-nav-btn svg {
+      width: 26px;
+      height: 26px;
+      stroke: #fff;
+      stroke-width: 2.4;
+      fill: none;
+    }
+
+    .title-wrapper {
+      position: relative;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+    }
+
+    .title-button {
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #111;
+      border: 1px solid #333;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .title-arrow {
+      font-size: .8rem;
+      color: #aaa;
+    }
+
+    .title-date-input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .tools {
+      margin-top: 8px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 0 10px;
+      flex-shrink: 0;
+    }
+
+    .tool-btn {
+      padding: 7px 16px;
+      border-radius: 40px;
+      background: #171717;
+      border: 1px solid #333;
+      color: #ccc;
+      font-size: .85rem;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .tool-btn:active {
+      transform: scale(0.94);
+      opacity: .7;
+    }
+
+    .tool-btn.active {
+      background:
+        radial-gradient(circle at 0% 0%, rgba(129, 212, 250, 0.3), transparent 55%),
+        linear-gradient(135deg, rgba(37, 99, 235, 0.95), rgba(56, 189, 248, 0.95));
+      border-color: rgba(129, 140, 248, 1);
+      color: #fff;
+    }
+
+    .today-btn:active {
+      box-shadow: 0 0 16px rgba(255,255,180,0.9);
+      transform: scale(0.9);
+    }
+
+    .tool-label {
+      font-size: .8rem;
+      color: #ccc;
+    }
+
+    .toggle {
+      width: 48px; height: 26px;
+      border-radius: 50px;
+      background: #222;
+      border: 1px solid #444;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .toggle-thumb {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: #888;
+      position: absolute;
+      top: 2px; left: 3px;
+      transition: .18s;
+    }
+
+    .toggle.active {
+      background: #105fce;
+      border-color: #105fce;
+    }
+
+    .toggle.active .toggle-thumb {
+      left: 23px;
+      background: #fff;
+    }
+
+    .selection-info {
+      height: 20px;
+      font-size: .85rem;
+      text-align: center;
+      margin-top: 4px;
+      visibility: hidden;
+      flex-shrink: 0;
+    }
+
+    .view {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      border-top: 1px solid #222;
+    }
+
+    .soft-0 { background: rgb(130,160,220); color: #fff; }
+    .soft-1 { background: rgb(150,195,165); color: #fff; }
+    .soft-2 { background: rgb(225,145,170); color: #fff; }
+    .soft-3 { background: rgb(185,160,215); color: #fff; }
+    .soft-4 { background: rgb(190,205,140); color: #fff; }
+    .soft-5 { background: rgb(150,170,215); color: #fff; }
+
+    .weekend.soft-0 { background: rgb(110,140,200); }
+    .weekend.soft-1 { background: rgb(130,175,145); }
+    .weekend.soft-2 { background: rgb(200,120,150); }
+    .weekend.soft-3 { background: rgb(165,140,190); }
+    .weekend.soft-4 { background: rgb(170,185,120); }
+    .weekend.soft-5 { background: rgb(130,150,195); }
+
+    .gray {
+      background: #2b2b2b;
+      color: #e5e5e5;
+    }
+    .gray.we {
+      background: #1a1a1a;
+    }
+
+    .in-range-solid {
+      background: rgba(60,120,255,0.85) !important;
+      color: #fff !important;
+      box-shadow: 0 0 8px rgba(90,160,255,0.55) !important;
+      border-color: rgba(160,200,255,0.75) !important;
+    }
+
+    .in-range-gradient {
+      background:
+        radial-gradient(circle at 0% 0%, rgba(130,200,255,0.35), transparent 55%),
+        radial-gradient(circle at 80% 120%, rgba(40,90,200,0.45), transparent 55%),
+        linear-gradient(135deg, rgba(70,140,255,0.9), rgba(10,25,80,0.9)) !important;
+      color: #fff !important;
+      box-shadow: none !important;
+      border-color: rgba(219,234,254,0.75) !important;
+    }
+
+    .today {
+      box-shadow: 0 0 0 2px #facc15 inset !important;
+    }
+
+    .highlight {
+      box-shadow: 0 0 0 2px #fff inset !important;
+    }
+
+    .date-cell {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .9rem;
+      font-weight: 700;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+
+    .date-cell:active {
+      transform: scale(0.94);
+    }
+
+    .date-cell.empty {
+      background: transparent !important;
+      border-color: transparent !important;
+      cursor: default;
+    }
+
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(7,1fr);
+      gap: 6px;
+    }
+
+    .week-header {
+      display: grid;
+      grid-template-columns: repeat(7,1fr);
+      gap: 6px;
+    }
+
+    .year-controls {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .year-btn-sm {
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid #444;
+      background: #1a1a1a;
+      color: #ccc;
+      cursor: pointer;
+      font-size: .75rem;
+    }
+
+    .year-btn-sm.active {
+      background: #105fce;
+      border-color: #105fce;
+      color: #fff;
+    }
+
+    .year-grid {
+      display: grid;
+      gap: 4px;
+      padding-bottom: 30px;
+    }
+
+    .year-month {
+      border-radius: 12px;
+      border: 1px solid #333;
+      padding: 4px;
+    }
+
+    .year-month-title {
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .year-month-grid {
+      display: grid;
+      grid-template-columns: repeat(7,1fr);
+      gap: 2px;
+    }
+
+    .year-day {
+      border-radius: 5px;
+      font-size: .65rem;
+      text-align: center;
+      padding: 3px 0;
+      cursor: pointer;
+    }
+
+    @media (min-width: 768px) {
+      #page2 .container { max-width: 520px; }
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <h1>
-      <svg class="calendar-icon" viewBox="0 0 24 24">
-        <rect x="3" y="4" width="18" height="18" rx="2"/>
-        <line x1="16" y1="2" x2="16" y2="6"/>
-        <line x1="8" y1="2" x2="8" y2="6"/>
-        <line x1="3" y1="10" x2="21" y2="10"/>
-      </svg>
-      Vardiya Takvimi
-    </h1>
-    <p class="description">Vardiya tipini ve işten çıkış gününü seç.</p>
-  </div>
 
-  <div class="controls">
-    <div class="control-group">
-      <div class="control-label">Vardiya</div>
-      <div class="shift-btns">
-        <button class="config-btn active" id="shift2448">24/48</button>
-        <button class="config-btn" id="shift1236">12/36</button>
+<!-- SAYFA 1: VARDİYA TAKVİMİ -->
+<div id="page1" class="page active">
+  <div class="container">
+    <div class="header">
+      <h1 class="hidden-link">
+        <svg class="calendar-icon" viewBox="0 0 24 24">
+          <rect x="3" y="4" width="18" height="18" rx="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        Vardiya Takvimi
+      </h1>
+      <p class="description">Vardiya tipini ve işten çıkış gününü seç.</p>
+    </div>
+
+    <div class="vt-controls">
+      <div class="vt-control-group">
+        <div class="vt-control-label">Vardiya</div>
+        <div class="shift-btns">
+          <button class="vt-config-btn active" id="shift2448">24/48</button>
+          <button class="vt-config-btn" id="shift1236">12/36</button>
+        </div>
+      </div>
+
+      <div class="vt-control-group">
+        <div class="vt-control-label">İşten Çıkış</div>
+        <div class="exit-btns">
+          <button class="vt-config-btn" id="setYesterday">Dün</button>
+          <button class="vt-config-btn" id="setToday">Bugün</button>
+          <button class="vt-config-btn" id="setTomorrow">Yarın</button>
+        </div>
       </div>
     </div>
 
-    <div class="control-group">
-      <div class="control-label">İşten Çıkış</div>
-      <div class="exit-btns">
-        <button class="config-btn" id="setYesterday">Dün</button>
-        <button class="config-btn" id="setToday">Bugün</button>
-        <button class="config-btn" id="setTomorrow">Yarın</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="calendar-info">
-    <button class="month-title-btn" id="monthTitle">
-      <span id="monthTitleText"></span>
-      <svg class="chevron-icon" viewBox="0 0 24 24">
-        <path d="m6 9 6 6 6-6"/>
-      </svg>
-    </button>
-    
-    <div class="stats-compact">
-      <div class="stat-mini work">
-        <div class="value" id="workDays">0</div>
-        <div class="label">İş</div>
-      </div>
-      <div class="stat-mini off">
-        <div class="value" id="offDays">0</div>
-        <div class="label">Tatil</div>
-      </div>
-    </div>
-
-    <div class="nav-group">
-      <button class="nav-btn" id="prevBtn">
-        <svg class="nav-icon arrow-icon" viewBox="0 0 24 24">
-          <path d="M15 18L9 12L15 6"/>
+    <div class="calendar-info">
+      <button class="month-title-btn" id="monthTitle">
+        <span id="monthTitleText"></span>
+        <svg class="chevron-icon" viewBox="0 0 24 24">
+          <path d="m6 9 6 6 6-6"/>
         </svg>
       </button>
-      <button class="nav-btn" id="todayBtn">
-        <svg class="nav-icon today-icon" viewBox="0 0 24 24">
-           <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2zM12 15h.01"/>
-        </svg>
-      </button>
-      <button class="nav-btn" id="nextBtn">
-        <svg class="nav-icon arrow-icon" viewBox="0 0 24 24">
-          <path d="M9 18L15 12L9 6"/>
-        </svg>
-      </button>
+
+      <div class="stats-compact">
+        <div class="stat-mini work">
+          <div class="value" id="workDays">0</div>
+          <div class="label">İş</div>
+        </div>
+        <div class="stat-mini off">
+          <div class="value" id="offDays">0</div>
+          <div class="label">Tatil</div>
+        </div>
+      </div>
+
+      <div class="vt-nav-group">
+        <button class="vt-nav-btn" id="vtPrevBtn">
+          <svg class="nav-icon arrow-icon" viewBox="0 0 24 24">
+            <path d="M15 18L9 12L15 6"/>
+          </svg>
+        </button>
+        <button class="vt-nav-btn" id="vtTodayBtn">
+          <svg class="nav-icon today-icon" viewBox="0 0 24 24">
+            <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2zM12 15h.01"/>
+          </svg>
+        </button>
+        <button class="vt-nav-btn" id="vtNextBtn">
+          <svg class="nav-icon arrow-icon" viewBox="0 0 24 24">
+            <path d="M9 18L15 12L9 6"/>
+          </svg>
+        </button>
+      </div>
     </div>
+
+    <div class="legend">
+      <div class="legend-item">
+        <span class="dot dot-work"></span> Çalışma
+      </div>
+      <div class="legend-item">
+        <span class="dot dot-off"></span> Tatil
+      </div>
+      <div class="legend-item">
+        <span class="dot dot-today"></span> Bugün
+      </div>
+    </div>
+
+    <div class="calendar-grid" id="calendar"></div>
   </div>
 
-  <div class="legend">
-    <div class="legend-item">
-      <span class="dot dot-work"></span> Çalışma
-    </div>
-    <div class="legend-item">
-      <span class="dot dot-off"></span> Tatil
-    </div>
-    <div class="legend-item">
-      <span class="dot dot-today"></span> Bugün
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Ay Seç</div>
+        <button class="close-btn" id="closeModal">×</button>
+      </div>
+      <div class="year-selector">
+        <button class="year-btn" id="prevYear">◀</button>
+        <div class="year-display" id="yearDisplay"></div>
+        <button class="year-btn" id="nextYear">▶</button>
+      </div>
+      <div class="months-grid" id="monthsGrid"></div>
     </div>
   </div>
-
-  <div class="calendar-grid" id="calendar"></div>
 </div>
 
-<div class="modal-overlay" id="modal">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Ay Seç</div>
-      <button class="close-btn" id="closeModal">×</button>
+<!-- SAYFA 2: DİJİTAL TAKVİM -->
+<div id="page2" class="page">
+  <div class="container">
+    <div class="header">
+      <h1 class="hidden-link">
+        <svg class="icon" viewBox="0 0 24 24">
+          <rect x="3" y="4" width="18" height="18" rx="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        Dijital Takvim
+      </h1>
     </div>
-    <div class="year-selector">
-      <button class="year-btn" id="prevYear">◀</button>
-      <div class="year-display" id="yearDisplay"></div>
-      <button class="year-btn" id="nextYear">▶</button>
+
+    <div class="tabs">
+      <button class="tab active" data-view="month">Ay</button>
+      <button class="tab" data-view="week">Hafta</button>
+      <button class="tab" data-view="year">Yıl</button>
     </div>
-    <div class="months-grid" id="monthsGrid"></div>
+
+    <div class="nav-bar">
+      <button class="dc-nav-btn" id="prevBtn">
+        <svg viewBox="0 0 24 24"><path d="M15 18L9 12L15 6"/></svg>
+      </button>
+
+      <div class="title-wrapper">
+        <div class="title-button">
+          <span id="titleText"></span>
+          <span class="title-arrow">▼</span>
+        </div>
+        <input type="date" id="lastWorkDate" class="title-date-input" />
+      </div>
+
+      <button class="dc-nav-btn" id="nextBtn">
+        <svg viewBox="0 0 24 24"><path d="M9 18L15 12L9 6"/></svg>
+      </button>
+    </div>
+
+    <div class="tools">
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="tool-label">Seçim</span>
+        <div class="toggle" id="selectToggle">
+          <div class="toggle-thumb"></div>
+        </div>
+      </div>
+      <button class="tool-btn" id="colorBtn">Renk</button>
+      <button class="tool-btn today-btn" id="todayBtn">Bugün</button>
+    </div>
+
+    <div class="selection-info" id="selectionInfo"></div>
+
+    <div class="view" id="monthView"></div>
+    <div class="view" id="weekView" style="display:none;"></div>
+    <div class="view" id="yearView" style="display:none;"></div>
   </div>
 </div>
 
 <script>
+/* ---------------- VARDİYA TAKVİMİ JS (İZOLE) ---------------- */
+(function(){
   const trMonths = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
   const trDays = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
-  
+
   let shiftType = "24-48";
   let lastExitDate = null;
   const today = new Date();
@@ -677,7 +1087,7 @@
     const t = new Date();
     const y = new Date(t); y.setDate(t.getDate() - 1);
     const tm = new Date(t); tm.setDate(t.getDate() + 1);
-    
+
     $("setToday").classList.toggle("active", dateStr === fmt(t));
     $("setYesterday").classList.toggle("active", dateStr === fmt(y));
     $("setTomorrow").classList.toggle("active", dateStr === fmt(tm));
@@ -760,7 +1170,7 @@
       const type = getDayType(date);
       if (type === "work") div.classList.add("work-day");
       else if (type === "off") div.classList.add("off-day");
-      
+
       if (isWeekend(date)) div.classList.add("weekend");
       if (sameDay(date, todayDate)) div.classList.add("today");
 
@@ -815,50 +1225,451 @@
   $("setYesterday").onclick = () => setExit(-1);
   $("setToday").onclick = () => setExit(0);
   $("setTomorrow").onclick = () => setExit(1);
-  $("todayBtn").onclick = goToday;
+  $("vtTodayBtn").onclick = goToday;
   $("monthTitle").onclick = openModal;
   $("closeModal").onclick = closeModal;
   $("modal").onclick = e => { if (e.target === $("modal")) closeModal(); };
-  
-  $("prevBtn").onclick = () => {
+
+  $("vtPrevBtn").onclick = () => {
     currentMonth--;
     if (currentMonth < 0) { currentMonth = 11; currentYear--; }
     render();
   };
-  
-  $("nextBtn").onclick = () => {
+
+  $("vtNextBtn").onclick = () => {
     currentMonth++;
     if (currentMonth > 11) { currentMonth = 0; currentYear++; }
     render();
   };
-  
+
   $("prevYear").onclick = () => { pickerYear--; renderMonths(); };
   $("nextYear").onclick = () => { pickerYear++; renderMonths(); };
 
-  // Çift tıklama zoom engelleme
-  let lastTouchEnd = 0;
-  document.addEventListener('touchend', function (event) {
-    const now = (new Date()).getTime();
-    if (now - lastTouchEnd <= 300) {
-      event.preventDefault();
-    }
-    lastTouchEnd = now;
-  }, false);
-
-  // Pinch zoom engelleme
-  document.addEventListener('gesturestart', function (e) {
-    e.preventDefault();
-  });
-
-  document.addEventListener('gesturechange', function (e) {
-    e.preventDefault();
-  });
-
-  document.addEventListener('gestureend', function (e) {
-    e.preventDefault();
-  });
-
   load();
+})();
+
+/* ---------------- DİJİTAL TAKVİM JS (İZOLE) ---------------- */
+(function(){
+  const trMonths=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+  const trDays=["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"];
+  const today=new Date();
+
+  let dcCurrentDate=new Date();
+  let dcView="month";
+  let selectionMode=false;
+  let colorMode=false;
+  let selStart=null, selEnd=null;
+  let highlightDate=null;
+  let yearCols=2;
+  let yearOpened=false;
+  let yearAutoScrollRequested=false;
+
+  const monthView=document.getElementById("monthView");
+  const weekView=document.getElementById("weekView");
+  const yearView=document.getElementById("yearView");
+  const selectionInfo=document.getElementById("selectionInfo");
+  const colorBtn=document.getElementById("colorBtn");
+  const selectToggle=document.getElementById("selectToggle");
+  const lastWorkDateInput=document.getElementById("lastWorkDate");
+  const titleTextEl=document.getElementById("titleText");
+
+  function dateOnly(d){ return new Date(d.getFullYear(),d.getMonth(),d.getDate()); }
+  function sameDay(a,b){ return a.getFullYear()==b.getFullYear() && a.getMonth()==b.getMonth() && a.getDate()==b.getDate(); }
+  function fmt(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+  function parseDateString(s){ const [y,m,da]=s.split("-").map(Number); return new Date(y,m-1,da); }
+  function startOfWeek(d){ const c=new Date(d); const day=(c.getDay()+6)%7; c.setDate(c.getDate()-day); return c; }
+  function isWeekend(date){ const jsDay=date.getDay(); return jsDay===0 || jsDay===6; }
+  function getSoftIndex(d){ const n=d.getFullYear()*372+(d.getMonth()+1)*31+d.getDate(); return Math.abs(n)%6; }
+
+  function clearSelection(){ selStart=null; selEnd=null; updateSelectionInfo(); }
+
+  function setSelection(a,b){
+    const s=dateOnly(a), e=dateOnly(b);
+    if(s<=e){ selStart=s; selEnd=e; } else { selStart=e; selEnd=s; }
+    updateSelectionInfo();
+  }
+
+  function isInSel(date){
+    if(!selStart||!selEnd) return false;
+    const t=dateOnly(date).getTime(), s=selStart.getTime(), e=selEnd.getTime();
+    return t>=s && t<=e;
+  }
+
+  function updateSelectionInfo(){
+    if(!selStart||!selEnd){
+      selectionInfo.style.visibility="hidden";
+      selectionInfo.textContent="";
+      return;
+    }
+    const diff=Math.floor((selEnd-selStart)/86400000)+1;
+    selectionInfo.style.visibility="visible";
+    selectionInfo.textContent=`${fmt(selStart)} - ${fmt(selEnd)} • ${diff} gün seçili`;
+  }
+
+  function cellClick(date){
+    if(selectionMode){
+      if(!selStart&&!selEnd){
+        setSelection(date,date);
+      } else if(selStart && selEnd && sameDay(selStart,selEnd) && sameDay(selStart,date)){
+        clearSelection();
+      } else if(selStart && selEnd && sameDay(selStart,selEnd)){
+        setSelection(selStart,date);
+      } else {
+        setSelection(date,date);
+      }
+      highlightDate=null;
+    } else {
+      const d=dateOnly(date);
+      if(highlightDate && sameDay(highlightDate,d)) highlightDate=null;
+      else highlightDate=d;
+      clearSelection();
+    }
+    render();
+  }
+
+  function setView(v){
+    dcView=v;
+    document.querySelectorAll(".tab").forEach(t=>{
+      t.classList.toggle("active",t.dataset.view===v);
+    });
+
+    monthView.style.display=(v==="month")?"block":"none";
+    weekView.style.display=(v==="week")?"block":"none";
+    yearView.style.display=(v==="year")?"block":"none";
+
+    if(v==="year" && !yearOpened){
+      yearOpened=true;
+      yearAutoScrollRequested=true;
+    }
+
+    render();
+  }
+
+  function changePeriod(delta){
+    if(dcView==="month") dcCurrentDate.setMonth(dcCurrentDate.getMonth()+delta);
+    else if(dcView==="week") dcCurrentDate.setDate(dcCurrentDate.getDate()+delta*7);
+    else dcCurrentDate.setFullYear(dcCurrentDate.getFullYear()+delta);
+    render();
+  }
+
+  function renderTitle(){
+    if(dcView==="month"){
+      titleTextEl.textContent=`${trMonths[dcCurrentDate.getMonth()]} ${dcCurrentDate.getFullYear()}`;
+    } else if(dcView==="week"){
+      const s=startOfWeek(dcCurrentDate); const e=new Date(s); e.setDate(s.getDate()+6);
+      titleTextEl.textContent=`${fmt(s)} - ${fmt(e)}`;
+    } else {
+      titleTextEl.textContent=`${dcCurrentDate.getFullYear()}`;
+    }
+    lastWorkDateInput.value = fmt(dcCurrentDate);
+  }
+
+  function applyGray(cell, weekend){
+    cell.classList.add("gray");
+    if(weekend) cell.classList.add("we");
+  }
+
+  function renderMonth(){
+    monthView.innerHTML="";
+    const wrap=document.createElement("div");
+    wrap.className="month-grid";
+
+    trDays.forEach(d=>{
+      const h=document.createElement("div");
+      h.className="weekday";
+      h.textContent=d;
+      wrap.appendChild(h);
+    });
+
+    const y=dcCurrentDate.getFullYear();
+    const m=dcCurrentDate.getMonth();
+    const f=new Date(y,m,1);
+    const l=new Date(y,m+1,0);
+    const offset=(f.getDay()+6)%7;
+    const t=dateOnly(today);
+
+    for(let i=0;i<offset;i++){
+      const c=document.createElement("div");
+      c.className="date-cell empty";
+      wrap.appendChild(c);
+    }
+
+    for(let d=1; d<=l.getDate(); d++){
+      const date=new Date(y,m,d);
+      const c=document.createElement("div");
+      c.className="date-cell";
+
+      const idx=getSoftIndex(date);
+      const weekend=isWeekend(date);
+
+      if(colorMode){
+        c.classList.add(`soft-${idx}`);
+        if(weekend) c.classList.add("weekend");
+      } else {
+        applyGray(c,weekend);
+      }
+
+      if(isInSel(date)){
+        c.classList.add(colorMode ? "in-range-gradient" : "in-range-solid");
+      }
+
+      if(highlightDate && sameDay(highlightDate,date)){
+        c.classList.add("highlight");
+      }
+
+      if(sameDay(date,t)){
+        c.classList.add("today");
+      }
+
+      c.textContent=d;
+      c.addEventListener("click",()=>cellClick(date));
+      wrap.appendChild(c);
+    }
+
+    monthView.appendChild(wrap);
+  }
+
+  function renderWeek(){
+    weekView.innerHTML="";
+    const s = startOfWeek(dcCurrentDate);
+    const t = dateOnly(today);
+
+    const grid = document.createElement("div");
+    grid.className = "week-header";
+
+    for(let i=0;i<7;i++){
+      const d = new Date(s);
+      d.setDate(s.getDate()+i);
+
+      const col = document.createElement("div");
+      col.style.display = "flex";
+      col.style.flexDirection = "column";
+      col.style.alignItems = "center";
+      col.style.justifyContent = "flex-start";
+      col.style.gap = "6px";
+
+      const label = document.createElement("div");
+      label.textContent = trDays[(d.getDay()+6)%7];
+      label.style.fontSize = ".75rem";
+      label.style.fontWeight = "700";
+      label.style.color = "#bbb";
+      label.style.textAlign = "center";
+
+      const cell = document.createElement("div");
+      cell.className = "date-cell";
+      cell.style.width = "100%";
+      cell.style.aspectRatio = "1";
+
+      const idx = getSoftIndex(d);
+      const weekend = isWeekend(d);
+
+      if(colorMode){
+        cell.classList.add(`soft-${idx}`);
+        if(weekend) cell.classList.add("weekend");
+      } else {
+        applyGray(cell, weekend);
+      }
+
+      if(isInSel(d)){
+        cell.classList.add(colorMode ? "in-range-gradient" : "in-range-solid");
+      }
+
+      if(highlightDate && sameDay(highlightDate,d)){
+        cell.classList.add("highlight");
+      }
+
+      if(sameDay(d,t)){
+        cell.classList.add("today");
+      }
+
+      cell.textContent = d.getDate();
+      cell.addEventListener("click",()=>cellClick(d));
+
+      col.appendChild(label);
+      col.appendChild(cell);
+      grid.appendChild(col);
+    }
+
+    weekView.appendChild(grid);
+  }
+
+  function renderYear(){
+    yearView.innerHTML="";
+
+    const ctr=document.createElement("div");
+    ctr.className="year-controls";
+
+    [1,2,3].forEach(n=>{
+      const b=document.createElement("button");
+      b.className="year-btn-sm"+(yearCols===n?" active":"");
+      b.textContent=n;
+      b.onclick=()=>{ yearCols=n; renderYear(); };
+      ctr.appendChild(b);
+    });
+
+    yearView.appendChild(ctr);
+
+    const wrap=document.createElement("div");
+    wrap.className="year-grid";
+    wrap.style.gridTemplateColumns=`repeat(${yearCols},1fr)`;
+
+    const y=dcCurrentDate.getFullYear();
+    const t=dateOnly(today);
+    let currentCard=null;
+
+    for(let m=0;m<12;m++){
+      const card=document.createElement("div");
+      card.className="year-month";
+
+      const isTodayMonth=(y===t.getFullYear() && m===t.getMonth());
+      const isCurrentMonth=(y===dcCurrentDate.getFullYear() && m===dcCurrentDate.getMonth());
+
+      if(isTodayMonth) card.style.boxShadow="0 0 0 1px #facc15";
+      if(isCurrentMonth){
+        card.style.boxShadow="0 0 0 1px #105fce";
+        currentCard=card;
+      }
+
+      const title=document.createElement("div");
+      title.className="year-month-title";
+      title.textContent=trMonths[m];
+      card.appendChild(title);
+
+      const mini=document.createElement("div");
+      mini.className="year-month-grid";
+
+      const f=new Date(y,m,1);
+      const l=new Date(y,m+1,0);
+      const offset=(f.getDay()+6)%7;
+
+      for(let i=0;i<offset;i++){
+        const dc=document.createElement("div");
+        dc.className="year-day";
+        mini.appendChild(dc);
+      }
+
+      for(let d=1; d<=l.getDate(); d++){
+        const date=new Date(y,m,d);
+        const dc=document.createElement("div");
+        dc.className="year-day";
+
+        const idx=getSoftIndex(date);
+        const weekend=isWeekend(date);
+
+        if(colorMode){
+          dc.classList.add(`soft-${idx}`);
+          if(weekend) dc.classList.add("weekend");
+        } else {
+          applyGray(dc,weekend);
+        }
+
+        if(isInSel(date)){
+          dc.classList.add(colorMode ? "in-range-gradient" : "in-range-solid");
+        }
+
+        if(highlightDate && sameDay(highlightDate,date)){
+          dc.classList.add("highlight");
+        }
+
+        if(sameDay(date,t)){
+          dc.classList.add("today");
+        }
+
+        dc.textContent=d;
+        dc.onclick=()=>cellClick(date);
+        mini.appendChild(dc);
+      }
+
+      card.appendChild(mini);
+      wrap.appendChild(card);
+    }
+
+    yearView.appendChild(wrap);
+
+    if(currentCard && yearAutoScrollRequested){
+      yearView.scrollTop=currentCard.offsetTop - 8;
+      yearAutoScrollRequested=false;
+    }
+  }
+
+  function render(){
+    renderTitle();
+    if(dcView==="month") renderMonth();
+    else if(dcView==="week") renderWeek();
+    else renderYear();
+  }
+
+  document.getElementById("todayBtn").onclick=()=>{
+    dcCurrentDate=new Date();
+    highlightDate=dateOnly(today);
+    clearSelection();
+    if(dcView==="year"){
+      yearAutoScrollRequested=true;
+    }
+    render();
+  };
+
+  colorBtn.onclick=()=>{
+    colorMode=!colorMode;
+    colorBtn.classList.toggle("active",colorMode);
+    render();
+  };
+
+  selectToggle.onclick=()=>{
+    selectionMode=!selectionMode;
+    selectToggle.classList.toggle("active",selectionMode);
+  };
+
+  document.querySelectorAll(".tab").forEach(t=>{
+    t.onclick=()=>setView(t.dataset.view);
+  });
+
+  document.getElementById("prevBtn").onclick=()=>changePeriod(-1);
+  document.getElementById("nextBtn").onclick=()=>changePeriod(1);
+
+  lastWorkDateInput.addEventListener("change",()=>{
+    if(!lastWorkDateInput.value) return;
+    const d=parseDateString(lastWorkDateInput.value);
+    dcCurrentDate=d;
+    highlightDate=dateOnly(d);
+    clearSelection();
+    if(dcView==="year") yearAutoScrollRequested=true;
+    render();
+  });
+
+  dcCurrentDate=new Date();
+  render();
+})();
+
+/* ---------------- ORTAK: SAYFA GEÇİŞİ & KİLİTLER ---------------- */
+
+function gotoPage(id){
+  document.getElementById("page1").classList.remove("active");
+  document.getElementById("page2").classList.remove("active");
+  document.getElementById(id).classList.add("active");
+}
+
+/* Gizli başlık tıklamaları */
+document.querySelector("#page1 h1").addEventListener("click", () => gotoPage("page2"));
+document.querySelector("#page2 h1").addEventListener("click", () => gotoPage("page1"));
+
+/* Sağ tık kapatma */
+document.addEventListener("contextmenu", e => e.preventDefault());
+
+/* Pinch-zoom engelleme (iOS vs) */
+document.addEventListener("gesturestart", e => e.preventDefault());
+document.addEventListener("gesturechange", e => e.preventDefault());
+document.addEventListener("gestureend", e => e.preventDefault());
+
+/* Çift dokunma ile zoom engelleme */
+let lastTouchEnd = 0;
+document.addEventListener("touchend", function (event) {
+  const now = (new Date()).getTime();
+  if (now - lastTouchEnd <= 300) {
+    event.preventDefault();
+  }
+  lastTouchEnd = now;
+}, { passive: false });
 </script>
 
 </body>
