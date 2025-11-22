@@ -3,10 +3,10 @@ const FILES_TO_CACHE = [
   "./",
   "./index.html",
   "./manifest.json",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png",
-  "./icons/apple-touch-icon-180.png",
-  "./icons/splash-1170x2532.png"
+  "./icons/manifest-icon-192.maskable.png",
+  "./icons/manifest-icon-512.maskable.png",
+  "./icons/apple-icon-180.png",
+  "./icons/apple-splash-1170-2532.jpg"
 ];
 
 // Kurulum: cache'e dosyaları ekle
